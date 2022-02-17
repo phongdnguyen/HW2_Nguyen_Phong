@@ -1,0 +1,46 @@
+---
+title: "Dynamic Figure"
+author: "Phong D. Nguyen"
+output: html_document
+knit: (function(inputFile, encoding) {
+  outDir <- 'docs';
+  rmarkdown::render(inputFile, 
+                    encoding=encoding,
+                    output_file=file.path(dirname(inputFile), outDir, 'index.html'))})
+---
+
+<hr/>
+
+I retrieved the McDonald menu dataset from kaggle. The data includes nutritional facts of all the items offered at McDonald. I want to see if there is any particular group of items that stand out. This dynamic graph allows me to initially explore the data visually. The graph is an improvement on the previous graph because I was able to add more information without cluttering the graph.
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(ggrepel)
+library(plotly)
+#set chunk and figure default options
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, tidy = TRUE)
+```
+
+```{r ggplot2Graph, fig.height=8, fig.width=10.5}
+# Data retrieve from kaggle.com
+mcdonald <- read_csv("data/menu.csv")
+# mcdonald %>% summary()
+mcdonald$Category <- mcdonald$Category %>% factor()
+plot <- ggplot(data = mcdonald,
+               aes(y = Calories, x = Carbohydrates, z = Item, color = Category)) +
+            geom_point(aes(size = `Dietary Fiber`), alpha = 0.5, shape = 16) +
+            geom_smooth(span = 1.25, alpha = 0) +
+            theme_minimal(base_size = 14) +
+            theme(legend.position = "none") +
+            ggtitle("McDonald's Menu \nCalories vs. Carbohydrates")
+
+ggplotly(plot)
+```
+
+<hr/>
+
+## Appendix
+
+```{r show-code, ref.label = all_labels(), echo = TRUE, eval = FALSE}
+```
